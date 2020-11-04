@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Two-Planet Orbit</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <style>
+    canvas {
+      border: 1px solid black;
+      width: 100%;
+      background-color: black;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Two-Planet Orbit</h1>
+    <br><br><br><br><br>
+    <div class="row">
+      <div class="col-md-6">
+        <table class="table">
+          <tr>
+            <th><th>A</th><th>B</th>
+          </tr>
+          <tr>
+            <th>Radius</th>
+            <td><input id="ra" value="1" type="number" onchange='changed = true'></input></td>
+            <td><input id="rb" value="5" type="number" onchange='changed = true'></input></td>
+          </tr>
+          <tr>
+            <th>Angular Speed</th>
+            <td><input id="wa" value="6.28" type="number" onchange='changed = true'></input></td>
+            <td><input id="wb" value="1" type="number" onchange='changed = true'></input></td>
+          </tr>
+        </table>
+        <br>
+        <label>
+          dt (time step):
+          <input id="dt" value="0.05" type="number" onchange='changed = true'></input>
+        </label>
+        <br>
+        <label>
+          Animation Delay (ms):
+          <input id="delay" value="100" type="number" onchange='changed = true'></input>
+        </label>
+        <br><br><br>
+        <div class="input-group">
+            <span class="input-group-btn">
+              <button class="btn btn-default btn-lg btn-block" onclick="play()">
+                <span class="glyphicon glyphicon-play"></span>
+              </button>
+            </span>
+            <span class="input-group-btn">
+              <button class="btn btn-default btn-lg btn-block" onclick="pause()">
+                <span class="glyphicon glyphicon-pause"></span>
+              </button>
+            </span>
+          </div>
+      </div>
+      <div class="col-md-6">
+        <canvas id="output" width="1000" height="1000"></canvas>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+
+<script src="engine.js"></script>
+
+
+</html>

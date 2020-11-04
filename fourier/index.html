@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Fourier</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <style>
+    canvas {
+      border: 1px solid black;
+      width: 100%;
+      background-color: white;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Fourier</h1>
+    <br><br>
+    <div class="row">
+      <div class="col-md-6">
+        <label>radius (amplitude), frequency:<br>
+          <textarea rows="10" class="form-control" style="width: 100%" onchange='changed = true' id='list'>
+100, 1
+50, 2
+25, 3
+12.5, 4
+6.25,5
+3.125,6
+          </textarea>
+        </label>
+      </div>
+      <div class="col-md-6">
+        <label>
+          dt (time step):
+          <input id="dt" value="0.05" type="number" onchange='changed = true'></input>
+        </label>
+        <br>
+        <label>
+          Animation Delay (ms):
+          <input id="delay" value="100" type="number" onchange='changed = true'></input>
+        </label>
+        <br><br><br>
+        <div class="input-group">
+            <span class="input-group-btn">
+              <button class="btn btn-default btn-lg btn-block" onclick="play()">
+                <span class="glyphicon glyphicon-play"></span>
+              </button>
+            </span>
+            <span class="input-group-btn">
+              <button class="btn btn-default btn-lg btn-block" onclick="pause()">
+                <span class="glyphicon glyphicon-pause"></span>
+              </button>
+            </span>
+          </div>
+      </div>
+    </div>
+    <br><br>
+    <div class="row">
+      <div class="col-md-12">
+        <canvas id="output" width="1000" height="500"></canvas>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+
+<script src="engine.js"></script>
+
+
+</html>
