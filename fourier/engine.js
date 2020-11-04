@@ -4,7 +4,7 @@
 const canvas = document.getElementById('output');
 const ctx = canvas.getContext('2d');
 
-const RIGHT_SIDE = 350;
+const SIDE = 350;
 
 
 
@@ -17,8 +17,9 @@ var num_circles = 0;
 var radius = [];
 var theta = [];
 var d_theta = [];
-var past_heights = [];
 
+var past_y = [];
+var past_x = [];
 
 reset();
 
@@ -28,7 +29,17 @@ function reset() {
   radius = [];
   theta = [];
   d_theta = [];
-  past_heights = [];
+  past_x = [];
+  past_y = [];
+}
+
+
+function interpret(string, rep) {
+  var s = string;
+  for (var k in rep) {
+    s = s.replace(k, rep[k]);
+  }
+  return eval(s.trim());
 }
 
 
@@ -37,17 +48,30 @@ function get_settings() {
   dt = Number(document.getElementById('dt').value);
   delay = Number(document.getElementById('delay').value);
 
-  var text = document.getElementById('list').value;
-  var lines = text.split('\n');
-  for (var i = 0; i < lines.length; i++) {
-    if (lines[i].trim() != '') {
-      var info = lines[i].split(',');
-      radius[i] = Number(info[0].trim());
-      theta[i] = 0;
-      d_theta[i] = 2 * Math.PI * Number(info[1].trim()) * dt;
+  var mode = $("input:radio[name='mode']:checked").val();
+
+  if (mode == "list") {
+    var text = document.getElementById('list').value;
+    var lines = text.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].trim() != '') {
+        var info = lines[i].split(',');
+        radius[i] = interpret(info[0], {'pi':'Math.PI'}) * 100;
+        theta[i] = 0;
+        d_theta[i] = 2 * Math.PI * interpret(info[1]) * dt;
+        num_circles++;
+      }
+    }
+  } else {
+    var rule = document.getElementById('rule').value.split(',');
+    for (var i = 1; i < 100; i++) {
+      radius[i-1] = interpret(rule[0], {'pi':'Math.PI', 'n': String(i)}) * 100;
+      theta[i-1] = 0;
+      d_theta[i-1] = 2 * Math.PI * interpret(rule[1], {'pi':'Math.PI', 'n': String(i)}) * dt;
       num_circles++;
     }
   }
+
 
 }
 
@@ -62,8 +86,8 @@ function get_xy_coordinates(theta, r) {
 
 function step() {
 
-  var x = canvas.height / 2;
-  var y = canvas.height / 2;
+  var x = (canvas.width - SIDE) / 2;
+  var y = SIDE + (canvas.height - SIDE) / 2;
 
   ctx.strokeStyle = "black";
 
@@ -87,35 +111,62 @@ function step() {
     theta[i] = (theta[i] + d_theta[i]) % (2 * Math.PI);
   }
 
-  // add y to past heights
-  past_heights.push(y);
-  if (past_heights.length > RIGHT_SIDE) {
-    past_heights.shift();
+  // add x and y to past
+  past_x.push(x);
+  past_y.push(y);
+  if (past_y.length > SIDE) {
+    past_y.shift();
+  }
+  if (past_x.length > SIDE) {
+    past_x.shift();
   }
 
-  // draw line to graph
+  // draw lines to x and y graph
   ctx.strokeStyle = 'red';
   ctx.beginPath();
   ctx.moveTo(x, y);
-  ctx.lineTo(canvas.width - RIGHT_SIDE, y);
+  ctx.lineTo(canvas.width - SIDE, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x, SIDE);
   ctx.stroke();
 
-  // draw divider line
+  // draw divider lines
   ctx.strokeStyle = 'blue';
   ctx.beginPath();
-  ctx.moveTo(canvas.width - RIGHT_SIDE, 0);
-  ctx.lineTo(canvas.width - RIGHT_SIDE, canvas.height);
+  ctx.moveTo(canvas.width - SIDE, 0);
+  ctx.lineTo(canvas.width - SIDE, canvas.height);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0, SIDE);
+  ctx.lineTo(canvas.width, SIDE);
   ctx.stroke();
 
-  // draw past heights
+  // draw past x and y graphs
   ctx.strokeStyle = 'red';
-  for (var i = 0; i < past_heights.length; i++) {
+  for (var i = 0; i < SIDE; i++) {
     ctx.beginPath();
-    ctx.moveTo(canvas.width - RIGHT_SIDE + i, past_heights[past_heights.length - i]);
-    ctx.lineTo(canvas.width - RIGHT_SIDE + i + 1, past_heights[past_heights.length - i - 1]);
+    ctx.moveTo(past_x[past_x.length - i], SIDE - i);
+    ctx.lineTo(past_x[past_x.length - i - 1], SIDE - i - 1);
     ctx.stroke();
-    // ctx.fillRect(canvas.width - RIGHT_SIDE + i, , 1, 1);
+    ctx.beginPath();
+    ctx.moveTo(canvas.width - SIDE + i, past_y[past_y.length - i]);
+    ctx.lineTo(canvas.width - SIDE + i + 1, past_y[past_y.length - i - 1]);
+    ctx.stroke();
   }
+
+  // draw past loop
+  if (document.getElementById('loop').checked) {
+    ctx.strokeStyle = 'green';
+    for (var i = 0; i < past_x.length; i++) {
+      ctx.beginPath();
+      ctx.moveTo(past_x[past_x.length - i], past_y[past_y.length - i]);
+      ctx.lineTo(past_x[past_x.length - i - 1], past_y[past_y.length - i - 1]);
+      ctx.stroke();
+    }
+  }
+
 
 }
 

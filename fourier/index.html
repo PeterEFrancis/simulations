@@ -25,26 +25,48 @@
     <br><br>
     <div class="row">
       <div class="col-md-6">
-        <label>radius (amplitude), frequency:<br>
-          <textarea rows="10" class="form-control" style="width: 100%" onchange='changed = true' id='list'>
-100, 1
-50, 2
-25, 3
-12.5, 4
-6.25,5
-3.125,6
-          </textarea>
-        </label>
+        <h4>radius (amplitude), frequency:</h4>
+        <ul>
+          <li>
+            <label>
+              <input type="radio" name="mode" value="list"></input> List:
+              <br>
+              <textarea rows="10" class="form-control" style="width: 100%" onchange='changed = true' id='list'>
+4/pi, 1
+4/(3*pi), 3
+4/(5*pi), 5
+4/(7*pi), 7
+4/(9*pi), 9
+4/(11*pi), 11
+4/(13*pi), 13
+              </textarea>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="radio" name="mode" value="rule" checked></input> Rule:
+              <input value="4/(pi*(2*n-1)), 2*n-1" id="rule"></input>
+          </label></li>
+        </ul>
+
+      </div>
+      <div class="col-md-6">
+
+
       </div>
       <div class="col-md-6">
         <label>
           dt (time step):
-          <input id="dt" value="0.01" type="number" onchange='changed = true'></input>
+          <input id="dt" value="0.008" type="number" onchange='changed = true'></input>
         </label>
         <br>
         <label>
           Animation Delay (ms):
-          <input id="delay" value="50" type="number" onchange='changed = true'></input>
+          <input id="delay" value="40" type="number" onchange='changed = true'></input>
+        </label>
+        <br>
+        <label>Draw Loop:
+          <input id="loop" type="checkbox"></input>
         </label>
         <br><br><br>
         <div class="input-group">
@@ -64,7 +86,7 @@
     <br><br>
     <div class="row">
       <div class="col-md-12">
-        <canvas id="output" width="1000" height="500"></canvas>
+        <canvas id="output" width="1000" height="1000"></canvas>
       </div>
     </div>
   </div>
