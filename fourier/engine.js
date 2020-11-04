@@ -109,7 +109,7 @@ function step() {
 
   // draw past heights
   ctx.strokeStyle = 'red';
-  for (var i = 0; i < past_heights.length - 1; i++) {
+  for (var i = 0; i < past_heights.length; i++) {
     ctx.beginPath();
     ctx.moveTo(canvas.width - RIGHT_SIDE + i, past_heights[past_heights.length - i]);
     ctx.lineTo(canvas.width - RIGHT_SIDE + i + 1, past_heights[past_heights.length - i - 1]);
