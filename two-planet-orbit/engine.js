@@ -13,10 +13,6 @@ var theta;
 var d_theta;
 
 
-var changed = true;
-
-
-
 
 
 function clear() {
@@ -74,10 +70,8 @@ function step() {
 
 
 function play() {
-  if (changed) {
-    clear();
-    changed = false;
-  }
+  clear();
+  pause();
   get_settings();
   ctx.strokeStyle = "blue";
   for (var i = 0; i < 2; i++) {
@@ -85,8 +79,7 @@ function play() {
     ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width * r[i] * 0.4 , 0, 2 * Math.PI);
     ctx.stroke();
   }
-  updateID = setInterval(step, delay)
-
+  updateID = setInterval(step, delay);
 }
 
 

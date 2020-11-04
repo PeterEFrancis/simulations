@@ -20,9 +20,6 @@ var d_theta = [];
 var past_heights = [];
 
 
-var changed = true;
-
-
 reset();
 
 
