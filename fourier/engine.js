@@ -44,7 +44,7 @@ function get_settings() {
       var info = lines[i].split(',');
       radius[i] = Number(info[0].trim());
       theta[i] = 0;
-      d_theta[i] = 2 * Math.PI * Number(info[1].trim()) / 100;
+      d_theta[i] = 2 * Math.PI * Number(info[1].trim()) * dt;
       num_circles++;
     }
   }
