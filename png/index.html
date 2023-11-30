@@ -23,7 +23,7 @@
 		<center>
 			<br>
 			<h1>Polynuclear Growth Process</h1>
-			<div id="calculator" style="width: 1000px; height: 1000px;"></div>
+			<div id="calculator" style="width: 650px; height: 650px;"></div>
 			<br>
 			<button onclick="time_step()"><h1>Time Step</h1></button>
 		</center>
@@ -37,7 +37,7 @@
 			expressions:false,
 			keypad:false,
 			settingsMenu:false,
-			// zoomButtons:false,
+			zoomButtons:false,
 			// lockViewport:true,
 			showYAxis: false,
 			showXAxis: false,
@@ -214,8 +214,9 @@
 			// grow each line
 			let to_add = new line();
 			for (let i = 0; i < show.length; i++) {
+				let new_to_add = show[i].grow();
 				show[i].add(to_add);
-				to_add = show[i].grow();
+				to_add = new_to_add;
 			}
 			if (!to_add.is_zero()) {
 				show.push(to_add)
@@ -224,7 +225,7 @@
 			// random growth on top line
 			let r_arr = [];
 			for (let i = 0; i < curr; i++) {
-				r_arr.push(Math.random());
+				r_arr.push(2 * Math.random());
 			}
 			random_growth = list_to_line(r_arr);
 			curr++;
