@@ -1,0 +1,247 @@
+<html>
+
+	<script src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+
+		
+	<head>
+		<style>
+/*
+			body {
+				margin: auto;
+				max-width: 600px;
+			}*/
+
+			#calculator1, #calculator2 {
+				display: inline-block;
+				margin: 30px;
+			}
+		</style>
+	</head>
+
+
+	<body>
+		<center>
+			<br>
+			<h1>Last Passage Percolation on the Grid</h1>
+			<div id="calculator1" style="width: 400px; height: 400px;"></div>
+
+			<div id="calculator2" style="width: 400px; height: 400px;"></div>
+			<br><br>
+
+
+			<label for="n">n = <span id="n-value">10</span><label>
+				<br>
+			<input id="n_slider" type="range" style="width: 80%" min="10" max="750" step="1" value="10" oninput="run(Number(this.value))"></input>
+			<br><br>
+			<button onclick="loopId=play()">Play</button>
+			<button onclick="pause()">Pause</button>
+
+		</center>
+	</body>
+
+	<script>
+
+		var elt1 = document.getElementById('calculator1');
+		var calculator1 = Desmos.GraphingCalculator(elt1, {
+			expressions:false,
+			keypad:false,
+			settingsMenu:false,
+			zoomButtons:false,
+			lockViewport:true,
+			showYAxis: false,
+			showXAxis: true,
+			xAxisStep: 1,
+			xAxisMinorSubdivisions: 1,
+			yAxisStep: 1,
+			yAxisMinorSubdivisions: 1,
+		});
+
+		var elt2 = document.getElementById('calculator2');
+		var calculator2 = Desmos.GraphingCalculator(elt2, {
+			expressions:false,
+			keypad:false,
+			settingsMenu:false,
+			zoomButtons:false,
+			lockViewport:true,
+			// showYAxis: false,
+			// showXAxis: false
+		});
+		
+
+		function rand() {
+			// return Math.round(Math.random() * 10) / 10;
+			return Math.random();
+		}
+
+		function arr(a, c) {
+			return [...Array(a)].map(x => c());
+		}
+
+		function two_dim_arr(a, b, c) {
+			return arr(a, () => arr(b, c));
+		}
+
+		function get_path(n) {
+			let N = n + 1;
+			// create grid of random weights
+			let rnd_grid = two_dim_arr(N, N, () => new Object());
+			for (let r = 0; r < N; r++) {
+				for (let c = 0; c < N; c++) {
+					if (r < N - 1) {
+						rnd_grid[r][c]['D'] = rand();
+					}
+					if (c < N - 1) {
+						rnd_grid[r][c]['R'] = rand();
+					}
+				}
+			}
+
+			let sum_grid = two_dim_arr(N, N, () => 0);
+			let dir_grid = two_dim_arr(N, N, () => ' ');
+			
+			// base cases
+			for (let i = 1; i < N; i++) {
+				dir_grid[0][i] = "L";
+				dir_grid[i][0] = "U";
+				sum_grid[0][i] = sum_grid[0][i - 1] + rnd_grid[0][i - 1]['R'];
+				sum_grid[i][0] = sum_grid[i - 1][0] + rnd_grid[i - 1][0]['D'];
+			}
+
+			// fill in rest
+			for (let r = 1; r < N; r++) {
+				for (let c = 1; c < N; c++) {
+					let u_sum = sum_grid[r - 1][c] + rnd_grid[r - 1][c]['D'];
+					let l_sum = sum_grid[r][c - 1] + rnd_grid[r][c - 1]['R'];
+					if (u_sum > l_sum) {
+						sum_grid[r][c] = u_sum;
+						dir_grid[r][c] = 'U';
+					} else {
+						sum_grid[r][c] = l_sum;
+						dir_grid[r][c] = 'L';
+					}
+				}
+			}
+
+			// recover path from dir_grid
+			let path = [];
+			let cr = N - 1;
+			let cc = N - 1;
+			while (cr + cc > 0) {
+				if (dir_grid[cr][cc] == 'L') {
+					path.push(0);
+					cc--;
+				} else {
+					path.push(1);
+					cr--;
+				}
+			}
+			// note: the algorithm creates a path from the bottom right left to the top left, but then I use it as a path from the top left to the bottom right
+			return path;
+		}
+
+
+		function get_path_points(path) {
+			let X = [0];
+			let Y = [0];
+			let x = 0;
+			let y = 0;
+			for (let i = 0; i < path.length; i++) {
+				if (path[i] == 1) {
+					x += 1
+				} else {
+					y += 1;
+				}
+				X.push(x);
+				Y.push(y);
+			}
+			return [X, Y];
+		}
+
+		function R(n, X, Y) {
+			let newX = [];
+			let newY = [];
+
+			for (let i = 0; i <= 2 * n; i++) {
+				newY.push(Y[i] / n);
+				newX.push(2 ** (-5/3) * n ** (-2/3) * (X[i] - Y[i]));
+			}
+
+			return [newX, newY];
+		}
+
+		function run(n) {
+
+			document.getElementById('n-value').innerHTML = n;
+
+			let lw = 2.5 - (1.5 / (1 + Math.E**((250-n)/100)));
+
+			let [X, Y] = get_path_points(get_path(n));
+			let [newX, newY] = R(n, X, Y);
+
+			calculator1.setMathBounds({
+				left: 0,
+				right: n,
+				bottom: 0,
+				top: n
+			});
+			calculator1.setExpression({
+				id: 'points',
+				latex: '(' + JSON.stringify(X) + ',' + JSON.stringify(Y) + ')',
+				lines: true,
+				points: false,
+				color: Desmos.Colors.BLUE,
+				lineWidth: lw
+			});
+
+			calculator2.setMathBounds({
+				left: -1,
+				right: 1,
+				bottom: 0,
+				top: 1
+			});
+			calculator2.setExpression({
+				id: 'points',
+				latex: '(' + JSON.stringify(newX) + ',' + JSON.stringify(newY) + ')',
+				lines: true,
+				points: false,
+				color: Desmos.Colors.BLUE,
+				lineWidth: lw
+			});
+
+
+
+
+		}
+
+		run(10)
+
+
+		var loopId = null;
+
+		function play() {
+			return setInterval(function() {
+				let slider =
+				document.getElementById('n_slider');
+				let new_n = ((1 + Number(slider.value) - 10) % 740) + 10;
+				slider.value = new_n;
+				run(new_n);
+			}, 100)
+		}
+
+		function pause() {
+			clearInterval(loopId);
+		}
+
+		
+
+
+
+	</script>
+</html>
+
+
+
+
+
+
+
