@@ -214,9 +214,8 @@
 			// grow each line
 			let to_add = new line();
 			for (let i = 0; i < show.length; i++) {
-				let new_to_add = show[i].grow();
 				show[i].add(to_add);
-				to_add = new_to_add;
+				to_add = show[i].grow();
 			}
 			if (!to_add.is_zero()) {
 				show.push(to_add)
