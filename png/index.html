@@ -26,6 +26,7 @@
 			<div id="calculator" style="width: 650px; height: 650px;"></div>
 			<br>
 			<button onclick="time_step()"><h1>Time Step</h1></button>
+			<button onclick="reset_plot()"><h1>Reset</h1></button>
 		</center>
 	</body>
 
@@ -52,17 +53,19 @@
 
 		class line {
 			constructor() {
-				this.left = [];
+				this.left = [0];
 				this.mid = 0;
-				this.right = [];
+				this.right = [0];
 			}
 
 			add_left(el) {
-				this.left.push(el);
+				this.set(this.left.length, el);
+				this.left.push(0);
 			}
 
 			add_right(el) {
-				this.right.push(el);
+				this.set(this.right.length, el);
+				this.right.push(0);
 			}
 
 			get(loc) {
@@ -133,7 +136,7 @@
 					let min = Math.min(L, C, R);
 
 					this.set(i, max);
-					if (min == C) {
+					if (min == C && C != 0) {
 						overlaps.set(i, Math.abs(R - L));
 					}
 				}
@@ -152,6 +155,12 @@
 
 		}
 
+
+		// let a = new line();
+		// a.set(0, 1);
+		// plot_line(a);
+		// a.grow();
+		// plot_line(a);
 
 
 
@@ -206,16 +215,34 @@
 
 
 
-		let curr = 0;
-		let show = [new line];
+		
+		
+		var ids, show, curr;
+
+
+		function reset_plot() {
+			curr = 1;
+			show = [new line];
+			clear_plot();
+			ids = [];
+			update_plot();
+		}
+
+		function clear_plot() {
+			while (ids && ids.length > 0) {
+				calculator.removeExpression({id:ids.pop()});
+			}
+		}
+
 
 		function time_step() {
 
 			// grow each line
 			let to_add = new line();
 			for (let i = 0; i < show.length; i++) {
+				let new_to_add = show[i].grow();
 				show[i].add(to_add);
-				to_add = show[i].grow();
+				to_add = new_to_add;
 			}
 			if (!to_add.is_zero()) {
 				show.push(to_add)
@@ -224,33 +251,27 @@
 			// random growth on top line
 			let r_arr = [];
 			for (let i = 0; i < curr; i++) {
-				r_arr.push(2 * Math.random());
+				r_arr.push(Math.random());
 			}
 			random_growth = list_to_line(r_arr);
 			curr++;
 			show[0].add(random_growth);
-
 			update_plot();
 		}
 
 
 
-		let ids = [];
+
 
 		function update_plot() {
-			while (ids.length > 0) {
-				calculator.removeExpression({id:ids.pop()});
-			}
-			ids = [];
+			clear_plot();
 			for (let i = 0; i < show.length; i++) {
 				ids.push(plot_line(show[i], -i));
 			}
 		}
 
 
-
-		update_plot();
-		time_step();
+		reset_plot();
 
 
 		// let test_line = list_to_line([1, 2, 3, 4, 5, 6, 7]);
