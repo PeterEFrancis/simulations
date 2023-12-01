@@ -53,19 +53,17 @@
 
 		class line {
 			constructor() {
-				this.left = [0];
+				this.left = [];
 				this.mid = 0;
-				this.right = [0];
+				this.right = [];
 			}
 
 			add_left(el) {
-				this.set(this.left.length, el);
-				this.left.push(0);
+				this.left.push(el);
 			}
 
 			add_right(el) {
-				this.set(this.right.length, el);
-				this.right.push(0);
+				this.right.push(el);
 			}
 
 			get(loc) {
@@ -123,23 +121,32 @@
 				return this;
 			}
 
+			clear() {
+				for (let i of this.indices()) {
+					this.set(i, 0);
+				}
+			}
+
 			grow() {
 				let overlaps = new line;
+				let new_vals = new line;
 
 				for (let i of this.indices()) {
-
 					let L = this.get(i - 1);
 					let C = this.get(i);
 					let R = this.get(i + 1);
 					
 					let max = Math.max(L, C, R);
-					let min = Math.min(L, C, R);
 
-					this.set(i, max);
-					if (min == C && C != 0) {
-						overlaps.set(i, Math.abs(R - L));
-					}
+					new_vals.set(i, max);
+					overlaps.set(i, Math.max(0, Math.min(R, L) - C));
 				}
+
+				new_vals.set(-this.left.length - 1, this.get(-this.left.length));
+				new_vals.set(this.right.length + 1, this.get(this.right.length));
+
+				this.clear();
+				this.add(new_vals);
 				return overlaps;
 			}
 
@@ -152,16 +159,22 @@
 				return true;
 			}
 
+			is_above(line) {
+				for (let i of this.indices()) {
+					if (this.get(i) < line.get(i)) {
+						return false;
+					}
+				}
+				for (let i of line.indices()) {
+					if (this.get(i) < line.get(i)) {
+						return false;
+					}
+				}
+				return true;
+			}
+
 
 		}
-
-
-		// let a = new line();
-		// a.set(0, 1);
-		// plot_line(a);
-		// a.grow();
-		// plot_line(a);
-
 
 
 		function list_to_line(arr) {
@@ -189,6 +202,7 @@
 			return ret;
 		}
 
+
 		function plot_line(line, shift) {
 			shift = shift || 0;
 
@@ -214,7 +228,6 @@
 		}
 
 
-
 		
 		
 		var ids, show, curr;
@@ -233,6 +246,10 @@
 				calculator.removeExpression({id:ids.pop()});
 			}
 		}
+
+
+
+
 
 
 		function time_step() {
@@ -254,6 +271,7 @@
 				r_arr.push(Math.random());
 			}
 			random_growth = list_to_line(r_arr);
+
 			curr++;
 			show[0].add(random_growth);
 			update_plot();
@@ -274,6 +292,21 @@
 		reset_plot();
 
 
+
+		function ordered() {
+			for (let i = 0; i < show.length - 1; i++) {
+				if (!show[i].is_above(show[i + 1])) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+
+
+
+
 		// let test_line = list_to_line([1, 2, 3, 4, 5, 6, 7]);
 
 		// plot_line(test_line, 10);
@@ -286,6 +319,25 @@
 
 
 
+
+
+
+
+		// function p(line) {
+		// 	console.log(line.get(-2), line.get(-1), line.get(0), line.get(1), line.get(2))
+		// }
+
+
+		// let test = new line;
+
+		// test.set(-1, 1);
+		// test.set(0, 3);
+		// test.set(1, 1);
+		
+		// p(test);
+		// let bumps = test.grow();
+		// p(test)
+		// p(bumps)
 
 
 
